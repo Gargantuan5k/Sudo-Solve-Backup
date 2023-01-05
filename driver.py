@@ -1,26 +1,13 @@
-import sys
-import shutil
 import os
 import re
+import shutil
+import sys
 
 import board_prettyprint
 import board_solver
 import console_user_input
 import user_account_control as uac
 
-try:
-    import inquirer
-except ModuleNotFoundError:
-    exc_type, exc_value, exc_trace = sys.exc_info()
-    missing_module = getattr(exc_value, 'name')
-
-    errtext = f"A required 3rd party module: '{missing_module}' is not installed!\n\
-To automatically install all requirements, type the following command into your terminal:\n\
-pip install -r {os.getcwd()}\\requirements.txt\n\n\
-Or, activate the virtual environment using:\n{os.getcwd()}\\venv\\Scripts\\Activate"
-
-    print(errtext)
-    sys.exit(1)
 
 title_file = "assets/ascii_title.txt"
 help_file = "assets/ascii_instructions.txt"
@@ -49,7 +36,7 @@ def get_logininfo():
         print(f"Hello {uname}! Please enter your password.")
         
         while True:
-            pwd = inquirer.password('Password (invisible)')            
+            pwd = input('Enter Password: ')            
             pwd_hash = uac.hash_sha256(pwd)
             if pwd_hash == uac.hash_sha256(''):
                 res = False, None
@@ -69,14 +56,14 @@ def get_logininfo():
 - At least one special character')
 
         while True:
-            pwd = inquirer.password('Password (invisible)')
+            pwd = input('Enter password: ')
             validation = validate_login(uname, pwd)
             if not validation[0]:
                 print(validation[1])
                 continue
                     
             pwd_hash = uac.hash_sha256(pwd)
-            pwd1_hash = uac.hash_sha256(inquirer.password('Re-enter Password (invisible)'))
+            pwd1_hash = uac.hash_sha256(input('Re-enter password: '))
             if pwd_hash == pwd1_hash:
                 break
 
@@ -126,12 +113,12 @@ def run_cli_solving_sequence():
     return
 
 
-def construct_prompt(name, message, choices):
-    return [inquirer.List(name, message, choices)]
+# def construct_prompt(name, message, choices):
+#     return [inquirer.List(name, message, choices)]
 
 
-def prompt_user(prompt, name):
-    return inquirer.prompt(prompt)[name]
+# def prompt_user(prompt, name):
+#     return inquirer.prompt(prompt)[name]
 
 
 if __name__ == "__main__":
@@ -139,9 +126,8 @@ if __name__ == "__main__":
         print_title()
         print("\n\n\n")
 
-        help_prompt = construct_prompt("help_yn", "Print Help File?", ["Yes", "No"])
-        help_yn = prompt_user(prompt=help_prompt, name="help_yn")
-        if help_yn == "Yes":
+        help_yn = input("Print help file? (Y/N): ").strip().lower()
+        if help_yn == "y":
             print_help()
 
         while True:
@@ -158,12 +144,9 @@ if __name__ == "__main__":
             while True:
                 run_cli_solving_sequence()
 
-                solve_another_prompt = construct_prompt(
-                    "solve_another", "Solve another board?", ["Yes", "No"]
-                )
-                solve_another = prompt_user(prompt=solve_another_prompt, name="solve_another").lower()
+                solve_another = input('Solve another puzzle? (Y/N): ').strip().lower()
 
-                if solve_another == "yes":
+                if solve_another == "y":
                     continue
 
                 with open("assets/ascii_thanks.txt", encoding="utf-8") as thxf:
