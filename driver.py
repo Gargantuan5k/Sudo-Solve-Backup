@@ -31,6 +31,7 @@ def validate_login(uname, pwd):
 
 
 def get_logininfo():
+    uac.check_paths()
     uname = input("Enter a username: ")
     if uac.check_existing_user(uname):
         print(f"Hello {uname}! Please enter your password.")

@@ -12,7 +12,7 @@ def hash_sha256(plaintext: str):
     return hashlib.sha256(plaintext.encode()).hexdigest()
 
 
-def __check_paths():
+def check_paths():
     if not os.path.exists(DATA_FOLDER_PATH):
         os.mkdir(DATA_FOLDER_PATH)
         os.mkdir(USERDATA_FOLDER_PATH)
@@ -61,7 +61,7 @@ def check_existing_user(uname):
 
 
 def signup(new_uname: str, new_pwd: str, hashed=False):
-    __check_paths()
+    check_paths()
     
     # hash username and password with SHA-256
     uname = new_uname
@@ -108,7 +108,7 @@ def login(uname: str, pwd_hash: str):
 # the actual driver.py file
 
 if __name__ == '__main__':
-    __check_paths()
+    check_paths()
 
     print('Signup')
     u = input('Enter uname: ')
