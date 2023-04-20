@@ -52,14 +52,28 @@ def get_input() -> list[list[int]]:
         [" ", " ", " ", " ", " ", " ", " ", " ", " "],
     ]
 
-    for row_idx, row in enumerate(board_repr):
-        for col_idx, _ in enumerate(row):
+    row_idx = 0
+    delete = False
+
+    while row_idx < len(board_repr):
+        __cls()
+        row = board_repr[row_idx]
+
+        if not delete:
+            col_idx = 0
+        
+        delete = False
+        while col_idx < len(row):
             board_repr[row_idx][col_idx] = "_"
             board_str = board_prettyprint.prettyprint(board_repr, ret=True)
 
             escape_seq = calc_up_num(row_idx, board_repr)
 
             while True:
+                if delete:
+                    delete = False
+                    break
+
                 __print_smaller_title()
                 input_num = input(
                     board_str + escape_seq + "<------ [ ] INTEGER FROM 1-9. 0 or No Input for an "
@@ -68,13 +82,33 @@ def get_input() -> list[list[int]]:
                 try:
                     int(input_num)
                 except ValueError:
-                    input_num = "0"
+                    if input_num != 'd':
+                        input_num = "0"
 
                 if input_num == "0":
                     input_num = " "
 
-                elif 1 <= int(input_num) <= 9:
+                elif input_num != 'd' and 1 <= int(input_num) <= 9:
                     pass
+
+                elif input_num == 'd':
+                    delete = True
+                    board_repr[row_idx][col_idx] = " "
+                    if col_idx > 0:
+                        col_idx -= 1
+                        break
+                    elif col_idx == 0 and row_idx > 0:
+                        col_idx = 8
+                        row_idx -= 1
+                        break
+                    elif row_idx == 0 and col_idx != 0:
+                        delete = False
+                        __cls()
+                        col_idx += 1
+                        continue
+                    else:
+                        input_num = ' '
+                    
 
                 else:
                     __cls()
@@ -101,10 +135,19 @@ def get_input() -> list[list[int]]:
                         f"repeated in the same {repeat_location}"
                     )
 
+            if delete:
+                break
+
             board_repr[row_idx][col_idx] = cp_board_repr[row_idx][
                 col_idx
             ]
             __cls()
+
+            col_idx += 1
+
+        if delete:
+            continue
+        row_idx += 1
 
     print(
         f"You have entered the following board configuration:\n"
